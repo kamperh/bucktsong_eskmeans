@@ -104,18 +104,17 @@ def main():
         audio = wav_dict["{}_{}".format(speaker, utt)][start_sample:end_sample]
 
         # Syllable boundary detection: Add to parallel stream
-        futures.append(executor.submit(
+        futures.append((executor.submit(
             theta_oscillator.get_boundaries, audio, fs=sample_rate
-            ))
+            ), utt_key))
 
         # Syllable boundary detection
         # boundaries = theta_oscillator.get_boundaries(audio, fs=sample_rate)
 
     # Store landmarks
-    results = [future.result() for future in tqdm(futures)]
+    results = [(future[0].result(), future[1]) for future in tqdm(futures)]
     landmarks_dict = {}
-    for i_utt, utt_key in enumerate(utterance_keys):
-        boundaries = results[i_utt]
+    for boundaries, utt_key in results:
         landmarks_dict[utt_key] = list(
             np.asarray(np.ceil(boundaries*100), dtype=np.int32)
             )[1:]  # remove first (0) landmark
