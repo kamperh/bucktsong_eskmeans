@@ -114,8 +114,8 @@ def main():
     # Store landmarks
     results = [(future[0].result(), future[1]) for future in tqdm(futures)]
     landmarks_dict = {}
-    for boundaries, utt_id in results:
-        landmarks_dict[utt_id] = list(
+    for boundaries, utt_key in results:
+        landmarks_dict[utt_key] = list(
             np.asarray(np.ceil(boundaries*100), dtype=np.int32)
             )[1:]  # remove first (0) landmark
 
